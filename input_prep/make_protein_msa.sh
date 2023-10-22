@@ -40,7 +40,7 @@ do
         if [ ! -s ${out_prefix}.msa0.a3m ]
         then
             cp $tmp_dir/t000_.$e.id90cov75.a3m ${out_prefix}.msa0.a3m
-	    break
+            break
         fi
     elif ((n50>4000))
     then

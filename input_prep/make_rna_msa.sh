@@ -6,7 +6,7 @@ out_dir="$2"
 out_tag="$3"
 
 overwrite=true
-if [ -f $out_dir/$out_tag.afa -a $overwrite = false]
+if  [[ -f $out_dir/$out_tag.afa && $overwrite = false ]] 
 then
     exit 0
 fi
@@ -126,9 +126,10 @@ do
     fi
     if [[ $hitnum -eq 0 ]]
     then
-	echo "no hits found"
+        echo "no hits found"
         cp $in_fasta $out_tag.afa
     fi
 done
 
 rm nhmmer.a2m
+echo "Done generating RNA MSA"
