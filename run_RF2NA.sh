@@ -66,6 +66,12 @@ function RNAMSA {
         echo " -> Running command: $PIPEDIR/input_prep/make_rna_msa.sh $seqfile $WDIR $tag $CPU $MEM"
         $PIPEDIR/input_prep/make_rna_msa.sh $seqfile $WDIR $tag $CPU $MEM > $WDIR/log/make_msa.$tag.stdout 2> $WDIR/log/make_msa.$tag.stderr
     fi
+    
+    ############################################################
+    # Clean RNA msa from non-standard bases
+    ############################################################
+    echo "CLeaning RNA MSA from non-standard bases"
+    $PIPEDIR/input_prep/process_msa_rf.sh $WDIR/$tag.afa
 }
 
 argstring=""
