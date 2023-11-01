@@ -88,7 +88,7 @@ class RoseTTAFoldModule(nn.Module):
         pair, state = self.templ_emb(t1d, t2d, alpha_t, xyz_t, mask_t, pair, state, use_checkpoint=use_checkpoint)
 
         # Predict coordinates from given inputs
-        msa, pair, xyz, alpha, xyzallatom, state = self.simulator(
+        msa, pair, xyz, alpha, xyzallatom, state, last_hidden = self.simulator(
             seq_unmasked, msa_latent, msa_full, pair, xyz[:,:,:3], state, idx, same_chain, use_checkpoint=use_checkpoint)
         
         if return_raw:
@@ -110,4 +110,4 @@ class RoseTTAFoldModule(nn.Module):
         # predict bind/no-bind
         p_bind = self.bind_pred(logits_pae,same_chain)
 
-        return logits, logits_aa, logits_pae, p_bind, xyz, alpha, xyzallatom, lddt, msa[:,0], pair, state
+        return logits, logits_aa, logits_pae, p_bind, xyz, alpha, xyzallatom, lddt, msa[:,0], pair, state, last_hidden
