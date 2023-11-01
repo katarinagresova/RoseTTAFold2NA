@@ -293,7 +293,7 @@ class Predictor():
                 msa_extra_i = msa_extra[:,i_cycle].to(self.device)
                 seq_i = seq[:,i_cycle].to(self.device)
                 with torch.cuda.amp.autocast(True):
-                    logit_s, logit_aa_s, logit_pae, p_bind, init_crds, alpha_prev, _, pred_lddt_binned, msa_prev, pair_prev, state_prev = self.model(
+                    logit_s, logit_aa_s, logit_pae, p_bind, init_crds, alpha_prev, _, pred_lddt_binned, msa_prev, pair_prev, state_prev, last_hidden = self.model(
                         msa_latent=msa_seed_i, 
                         msa_full=msa_extra_i,
                         seq=seq_i, 
@@ -343,6 +343,9 @@ class Predictor():
                 prob_s.append(prob)
         
         end = time.time()
+        
+        print("Saving embedding to embbed.npy")
+        np.save("embbed.npy", last_hidden.cpu().detach().numpy())
 
         for prob in prob_s:
             prob += 1e-8

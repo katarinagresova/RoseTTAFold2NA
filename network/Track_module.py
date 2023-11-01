@@ -214,10 +214,10 @@ class SCPred(nn.Module):
         si = self.linear_s0(seq) + self.linear_si(state)
 
         si = si + self.linear_2(F.relu_(self.linear_1(F.relu_(si))))
-        si = si + self.linear_4(F.relu_(self.linear_3(F.relu_(si))))
+        last_hidden = si + self.linear_4(F.relu_(self.linear_3(F.relu_(si))))
 
-        si = self.linear_out(F.relu_(si))
-        return si.view(B, L, NTOTALDOFS, 2)
+        si = self.linear_out(F.relu_(last_hidden))
+        return si.view(B, L, NTOTALDOFS, 2), last_hidden
 
 
 class Str2Str(nn.Module):
@@ -321,9 +321,9 @@ class Str2Str(nn.Module):
 
         xyz = torch.einsum('blij,blaj->blai', Rout,v)+xyz[:,:,1:2,:]+T[:,:,None,:]
 
-        alpha = self.sc_predictor(msa[:,0], state)
+        alpha, last_hidden = self.sc_predictor(msa[:,0], state)
 
-        return xyz, state, alpha
+        return xyz, state, alpha, last_hidden
 
 
 class IterBlock(nn.Module):
@@ -366,7 +366,7 @@ class IterBlock(nn.Module):
             pair = self.msa2pair(msa, pair)
             pair = self.pair2pair(pair, rbf_feat)
 
-            xyz, state, alpha = self.str2str(msa.float(), pair.float(), xyz.detach().float(), state.float(), idx, top_k=0)
+            xyz, state, alpha, last_hidden = self.str2str(msa.float(), pair.float(), xyz.detach().float(), state.float(), idx, top_k=0)
         
         return msa, pair, xyz, state, alpha
 
@@ -486,7 +486,7 @@ class IterativeSimulator(nn.Module):
                 seq, idx, xyz.detach(), alpha.detach()
             )
 
-            xyz, state, alpha = self.str_refiner(
+            xyz, state, alpha, last_hidden = self.str_refiner(
                 msa.float(), pair.float(), xyz.detach().float(), state.float(), idx, 
                 extra_l0.float(), extra_l1.float(), top_k=128)
 
@@ -498,4 +498,4 @@ class IterativeSimulator(nn.Module):
         xyzs = torch.stack(xyz_s, dim=0)
         alphas = torch.stack(alpha_s, dim=0)
 
-        return msa, pair, xyzs, alphas, xyzallatom, state
+        return msa, pair, xyzs, alphas, xyzallatom, state, last_hidden
