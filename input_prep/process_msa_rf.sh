@@ -10,7 +10,7 @@ cp "$input_file" "$backup_file"
 temp_file="${input_file}.temp"
 touch "$temp_file"
 
-dump_file="${input_file}.temp"
+dump_file="${input_file}.dump"
 touch "$dump_file"
 
 while IFS= read -r line; do
